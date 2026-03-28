@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة عزيز - القاعة الافتراضية</title>
+    <style>
+        body {
+            margin: 0; background: #12141d; color: white; font-family: sans-serif;
+            display: grid; grid-template-columns: 280px 1fr 320px; height: 100vh; gap: 10px; padding: 10px; box-sizing: border-box;
+        }
+        aside { background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(197,160,89,0.2); padding: 15px; display: flex; flex-direction: column; }
+        .main-stage { flex: 1; background: #000; border-radius: 25px; border: 2px solid #c5a059; display: flex; align-items: center; justify-content: center; position: relative; }
+        .control-bar { height: 80px; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .btn { background: #333; border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+        .btn-share { background: #c5a059; color: #1a2a6c; font-weight: bold; }
+        .chat-area { flex: 1; overflow-y: auto; padding: 10px; }
+        h3 { border-bottom: 1px solid #c5a059; color: #c5a059; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <aside><h3>قائمة الحضور</h3><div id="participants">الأستاذ (مضيف)<hr>تلميذ 1<br>تلميذ 2</div></aside>
+    <main style="display: flex; flex-direction: column;">
+        <div class="main-stage"><h2 id="status">بث الأستاذ المباشر</h2></div>
+        <div class="control-bar">
+            <button class="btn">🎤 كتم</button>
+            <button class="btn">📷 كاميرا</button>
+            <button class="btn btn-share" onclick="startShare()">🖥️ مشاركة الشاشة</button>
+            <button class="btn" style="background:#e74c3c" onclick="location.href='/'">خروج</button>
+        </div>
+    </main>
+    <aside><h3>الدردشة</h3><div class="chat-area">مرحباً بكم في منصة عزيز..</div><input type="text" placeholder="اكتب..." style="background:#222; border:none; padding:10px; color:white; border-radius:5px;"></aside>
+    <script>
+        async function startShare() {
+            try { await navigator.mediaDevices.getDisplayMedia({ video: true }); document.getElementById('status').innerText = "جاري مشاركة الشاشة..."; } catch (err) {}
+        }
+    </script>
+</body>
+</html>

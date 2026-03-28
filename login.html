@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة عزيز للتعليم عن بعد - الدخول</title>
+    <style>
+        :root { --main-gold: #c5a059; --dark-blue: #1a2a6c; }
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            font-family: 'Segoe UI', sans-serif; height: 100vh;
+            display: flex; justify-content: center; align-items: center; margin: 0;
+        }
+        @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 380px; text-align: center; border: 2px solid var(--main-gold);
+        }
+        h1 { color: var(--dark-blue); font-size: 26px; cursor: pointer; margin-bottom: 25px; border-bottom: 2px solid var(--main-gold); padding-bottom: 10px; }
+        select, input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #ddd; box-sizing: border-box; outline: none; }
+        .login-btn {
+            width: 100%; background: linear-gradient(to right, var(--main-gold), #e6b800);
+            color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px;
+            cursor: pointer; font-size: 18px; margin-top: 15px; transition: 0.3s;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #admin-panel {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 30px; border-radius: 20px; z-index: 1000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 3px solid var(--main-gold); width: 320px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <h1 onclick="checkAdmin()">منصة عزيز للتعليم عن بعد</h1>
+        <select id="role" onchange="toggleRoom()">
+            <option value="teacher">دخول كأستاذ</option>
+            <option value="student">دخول كتلميذ</option>
+        </select>
+        <input type="text" id="user" placeholder="اسم المستخدم">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <input type="text" id="room" placeholder="رمز القاعة الافتراضية" style="display:none">
+        <button class="login-btn" onclick="doLogin()">تسجيل الدخول</button>
+    </div>
+
+    <div id="admin-panel">
+        <h3 style="color: var(--dark-blue); text-align:center;">لوحة الإدارة المركزية</h3>
+        <input type="text" id="new-user" placeholder="اسم المستخدم الجديد">
+        <input type="password" id="new-pass" placeholder="كلمة المرور">
+        <button class="login-btn" onclick="saveUser('Teachers')">إضافة كأستاذ</button>
+        <button class="login-btn" style="background:#27ae60" onclick="saveUser('Students')">إضافة كتلميذ</button>
+        <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; border:none; color:red; cursor:pointer; width:100%; margin-top:10px;">إغلاق</button>
+    </div>
+
+    <script>
+        let clicks = 0;
+        function checkAdmin() {
+            clicks++;
+            if(clicks === 5) {
+                let p = prompt("كلمة مرور الإدارة:");
+                if(p === "123456") document.getElementById('admin-panel').style.display='block';
+                clicks = 0;
+            }
+        }
+        function toggleRoom() {
+            document.getElementById('room').style.display = (document.getElementById('role').value === 'student') ? 'block' : 'none';
+        }
+        async function doLogin() {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({role: document.getElementById('role').value, username: document.getElementById('user').value, password: document.getElementById('pass').value})
+            });
+            const data = await res.json();
+            if(data.success) window.location.href = '/classroom';
+            else alert(data.message);
+        }
+        async function saveUser(sheet) {
+            await fetch('/api/add-user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({target_sheet: sheet, Username: document.getElementById('new-user').value, Password: document.getElementById('new-pass').value})
+            });
+            alert("تم الحفظ بنجاح");
+        }
+    </script>
+</body>
+</html>
